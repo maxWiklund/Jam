@@ -1,3 +1,17 @@
+# Copyright (C) 2022  Max Wiklund
+#
+# Licensed under the Apache License, Version 2.0 (the “License”);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an “AS IS” BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import logging
 import os
 import subprocess
@@ -37,9 +51,12 @@ class RunArgs:
         config_data = config.get_jam_config(args.config)
         _engine = engine.ConfigEngine(config_data)
 
+        tmp_install_paths = _engine.get_install_paths()
+
         rez_command = ["rez", "env"]
         rez_command.extend([f'"{p}"' for p in _engine.get_packages()])
-        rez_command.extend(["--paths", ":".join(_engine.get_install_paths())])
+        if tmp_install_paths:
+            rez_command.extend(["--paths", ":".join(tmp_install_paths)])
 
         if args.command:
             rez_command.extend(["-c", args.command])
